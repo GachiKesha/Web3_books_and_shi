@@ -10,7 +10,7 @@ import {
 import { AuthGuard } from '../../guards/auth.guard';
 
 import { UserService } from './user.service';
-import { User } from './dto';
+import { User, Login } from './dto';
 
 @Controller('user')
 // @UseGuards(AuthGuard)
@@ -19,10 +19,14 @@ export class UserController {
 
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('register')
   async createUser(@Body() user: User) {
-    this.logger.log('Creating user');
     return this.userService.createUser(user);
+  }
+
+  @Post('login')
+  async login(@Body() login: Login) {
+    return this.userService.login(login);
   }
 
   @UseGuards(AuthGuard)

@@ -55,7 +55,6 @@ export class AuthService {
     const decoded = await this.verifyRefreshToken(refreshToken);
     const tokens = await this.generateTokens({
       member_id: decoded.member_id,
-      role_id: decoded.role_id,
     });
 
     return tokens;

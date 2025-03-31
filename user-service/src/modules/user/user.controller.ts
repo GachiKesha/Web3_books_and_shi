@@ -13,9 +13,14 @@ export class UserController {
 
   @MessagePattern(patterns.USER.CREATE)
   async createUser(dto: UserDTO) {
-    console.log(dto);
     this.logger.log('Creating user');
     return this.userService.createUser(dto);
+  }
+
+  @MessagePattern(patterns.USER.LOGIN)
+  async login(dto: UserDTO) {
+    this.logger.log('Loging in');
+    return this.userService.login(dto);
   }
 
   @MessagePattern(patterns.USER.FIND_ALL)

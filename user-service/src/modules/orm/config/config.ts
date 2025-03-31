@@ -1,6 +1,6 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
-const dbName = process.env.DB_NAME || 'users';
+const dbName = process.env.DB_NAME || 'web_lab';
 
 export const typeOrmModuleOptions: PostgresConnectionOptions = {
   type: 'postgres',

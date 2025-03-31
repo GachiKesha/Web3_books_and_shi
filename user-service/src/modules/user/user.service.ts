@@ -7,8 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthService } from '../auth/auth.service';
 
 import { UserDTO } from './dto';
-import { User } from '../../entities/user.entity';
-import { Role } from '../../entities/role.entity';
+import { User, Role } from '../../entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -18,38 +17,44 @@ export class UserService {
     private readonly authService: AuthService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Role)
-    private readonly roleRepository: Repository<Role>,
   ) {}
 
   async createUser(dto: UserDTO) {
-    this.logger.log(`Creating user: ${JSON.stringify(dto)}`);
     const { email, username, role } = dto;
     const userPassword = uuidv4().slice(0, 8);
 
-    const roleEntity = await this.roleRepository.findOneBy({ name: role });
-    if (!roleEntity) {
+    const allowedRoles = ['user', 'admin'];
+    if (!allowedRoles.includes(role)) {
       throw new RpcException(`Role ${role} not found`);
     }
 
-    // Remove role from userData and only use role_id
     const userData = {
       email,
       username,
       password: userPassword,
+      role: role as Role,
     };
 
-    const $user = this.userRepository.create({
-      ...userData,
-      role_id: roleEntity.id,
-    });
+    const user = this.userRepository.create(userData);
 
-    const user = await this.userRepository.save($user);
+    const savedUser = await this.userRepository.save(user);
 
     return this.authService.generateTokens({
-      member_id: user.id,
-      role_id: user.role_id,
+      member_id: savedUser.id,
     });
+  }
+
+  async login(dto: UserDTO)  {
+    const { email, password } = dto;
+
+    const user = await this.findUserByEmail(email);
+    if (!user || password !== user.password) { // Change password validation to hashing later
+      throw new RpcException('Invalid credentials');
+    }
+    
+    return this.authService.generateTokens({
+      member_id: user.id,
+    })
   }
 
   async findAllUsers() {
@@ -66,17 +71,11 @@ export class UserService {
       throw new RpcException('User not found');
     }
 
-    const roleEntity = await this.roleRepository.findOneBy({ name: dto.role });
-    if (!roleEntity) {
-      throw new NotFoundException(`Role ${dto.role} not found`);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { role: _, ...updateData } = dto;
+    const { role, ...updateData } = dto;
     return this.userRepository.save({
       ...user,
       ...updateData,
-      role_id: roleEntity.id,
+      ...(role ? { role: role as Role } : {}),
     });
   }
 

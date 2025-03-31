@@ -1,3 +1,3 @@
-import { User } from './user.dto';
+import { User, Login } from './user.dto';
 
-export { User };
+export { User, Login };
