@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
+import { RpcExceptionFilter } from './filters/rpc-exception.filter';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pack = require('./../package.json');
@@ -21,6 +22,8 @@ async function bootstrap() {
       queueOptions: { durable: false },
     },
   });
+  
+  app.useGlobalFilters(new RpcExceptionFilter());
   
   await app.startAllMicroservices();
   await app.listen(process.env.PORT ?? 3000);

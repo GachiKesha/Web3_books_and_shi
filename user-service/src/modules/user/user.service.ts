@@ -1,8 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import * as bcrypt from 'bcrypt'
 
 import { AuthService } from '../auth/auth.service';
 
@@ -21,7 +22,8 @@ export class UserService {
 
   async createUser(dto: UserDTO) {
     const { email, username, role } = dto;
-    const userPassword = uuidv4().slice(0, 8);
+    const salt = await bcrypt.genSalt();
+    const userPassword = await bcrypt.hash(dto.password, salt);
 
     const allowedRoles = ['user', 'admin'];
     if (!allowedRoles.includes(role)) {
@@ -35,6 +37,9 @@ export class UserService {
       role: role as Role,
     };
 
+    if (await this.findUserByEmail(email)) {
+      throw new RpcException(new BadRequestException('Invalid request. Please check your input.'));
+    }
     const user = this.userRepository.create(userData);
 
     const savedUser = await this.userRepository.save(user);
@@ -48,10 +53,10 @@ export class UserService {
     const { email, password } = dto;
 
     const user = await this.findUserByEmail(email);
-    if (!user || password !== user.password) { // Change password validation to hashing later
-      throw new RpcException('Invalid credentials');
+    const isCorrect = user && await bcrypt.compare(password, user.password);
+    if (!isCorrect) {
+      throw new RpcException(new UnauthorizedException('Invalid credentials'));
     }
-    
     return this.authService.generateTokens({
       member_id: user.id,
     })
@@ -68,7 +73,7 @@ export class UserService {
   async updateUser(id: string, dto: UserDTO) {
     const user = await this.findUserById(id);
     if (!user) {
-      throw new RpcException('User not found');
+      throw new RpcException(new NotFoundException('User not found'));
     }
 
     const { role, ...updateData } = dto;
@@ -82,7 +87,7 @@ export class UserService {
   async deleteUser(id: string) {
     const user = await this.findUserById(id);
     if (!user) {
-      throw new RpcException('User not found');
+      throw new RpcException(new NotFoundException('User not found'));
     }
     return this.userRepository.delete(id);
   }
@@ -94,7 +99,7 @@ export class UserService {
   async resetPassword(email: string) {
     const user = await this.findUserByEmail(email);
     if (!user) {
-      throw new RpcException('User not found');
+      throw new RpcException(new NotFoundException('User not found'));
     }
     return this.userRepository.save({ ...user, password: '123456' });
   }

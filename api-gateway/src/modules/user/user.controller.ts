@@ -11,6 +11,8 @@ import { AuthGuard } from '../../guards/auth.guard';
 
 import { UserService } from './user.service';
 import { User, Login } from './dto';
+import { catchError, throwError } from 'rxjs';
+import { RpcException } from '@nestjs/microservices';
 
 @Controller('user')
 // @UseGuards(AuthGuard)

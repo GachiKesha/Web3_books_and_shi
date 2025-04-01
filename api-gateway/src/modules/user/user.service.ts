@@ -1,5 +1,5 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { Injectable, Logger, Inject, HttpException, BadRequestException } from '@nestjs/common';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { timeout, catchError, throwError, firstValueFrom } from 'rxjs';
 
 import { User, Login } from './dto';
@@ -16,9 +16,12 @@ export class UserService {
   private send(pattern: any, data: any): Promise<unknown> {
     const res$ = this.userClient.send(pattern, data).pipe(
       timeout(30000),
-      catchError((e: Error) => {
+      catchError((e: any) => {
         this.logger.error(e);
-        return throwError(() => e);
+        if (e.response) {
+          return throwError(() => new RpcException(e.response));
+        }
+        else return throwError(() => e);
       }),
     );
     return firstValueFrom(res$);
