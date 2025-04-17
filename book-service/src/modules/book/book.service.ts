@@ -22,7 +22,9 @@ export class BookService {
   }
 
   async findOne(id: string): Promise<Book> {
-    const book = await this.bookRepository.findOne(id);
+    const book = await this.bookRepository.findOne({
+      where: { id: id }, 
+    });
     if (!book) {
       throw new NotFoundException(`Book with id ${id} not found`);
     }
@@ -33,5 +35,10 @@ export class BookService {
     const book = await this.findOne(id); // Validate if the book exists
     Object.assign(book, updateBookDto);
     return this.bookRepository.save(book);
+  }
+
+  async delete(id: string): Promise<void> {
+    const book = await this.findOne(id); // Validate if the book exists
+    await this.bookRepository.remove(book); // Remove the book from the repository
   }
 }

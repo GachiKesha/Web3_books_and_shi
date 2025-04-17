@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserController } from './user.controller';
-import { UserService } from './book.service';
-import { AuthModule } from '../auth/auth.module';
-
-import { User } from '../../entities/book.entity';
+import { BookController } from './book.controller';
+import { BookService } from './book.service';
+import { Book } from '../../entities/book.entity';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([User])],
-  controllers: [UserController],
-  providers: [UserService],
+  imports: [TypeOrmModule.forFeature([Book])],  // Підключаємо Book entity
+  controllers: [BookController],  // Вказуємо контролер
+  providers: [BookService],  // Вказуємо сервіс
 })
-export class UserModule {}
+export class BookModule {}

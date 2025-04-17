@@ -1,35 +1,28 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-export enum Role {
-  USER = 'user',
-  ADMIN = 'admin',
-}
-
-@Entity('users')
-export class User {
+@Entity('books')
+export class Book {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
-  email: string;
+  @Column({ type: 'varchar', length: 255 })
+  title: string;
 
-  @Column({ unique: true })
-  password: string;
+  @Column({ type: 'varchar', length: 255 })
+  author: string;
 
-  @Column({ unique: true })
-  username: string;
+  @Column({ type: 'varchar', length: 255 })
+  genre: string;
 
-  @Column({     
-    type: 'enum',
-    enum: Role,
-    default: Role.USER, 
-  })
-  role: Role;
+  @Column({ type: 'text', nullable: true })
+  description: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'int', nullable: true })
+  publication_year: number;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  file_url: string;
+
+  @Column({ type: 'timestamp' })
   created_at: Date;
 }

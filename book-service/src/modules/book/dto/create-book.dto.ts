@@ -1,8 +1,7 @@
-export interface Tokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface TokenPayload {
-  member_id: string;
+export class CreateBookDto {
+  title: string;
+  author: string;
+  description?: string;
+  genre: string;
+  year: number;
 }
