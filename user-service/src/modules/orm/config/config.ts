@@ -1,6 +1,5 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-
-const dbName = process.env.DB_NAME || 'web_lab';
+require('dotenv').config();
 
 export const typeOrmModuleOptions: PostgresConnectionOptions = {
   type: 'postgres',
@@ -9,7 +8,7 @@ export const typeOrmModuleOptions: PostgresConnectionOptions = {
   username: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
   cache: false,
-  database: dbName,
+  database: process.env.DB_NAME || 'web_lab',
   logging: ['warn', 'error'],
   synchronize: true,
 };

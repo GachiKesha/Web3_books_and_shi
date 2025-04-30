@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, Logger, NotFoundException, Unauthorize
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { Repository } from 'typeorm';
-import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt'
 
 import { AuthService } from '../auth/auth.service';

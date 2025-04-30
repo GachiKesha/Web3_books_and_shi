@@ -9,32 +9,32 @@ class ConfigService {
     return this.env || 'development';
   }
 
-  public getBrockerUri() {
-    return process.env.BROCKER_URI ?? 'amqp://rabbitmq:5672';
+  public getBrokerUri() {
+    return process.env.BROKER_URI ?? 'amqp://rabbitmq:5672';
   }
 
   public getPort() {
-    return process.env.PORT ?? 3001;
+    return process.env.PORT ?? 3002;
   }
 
   public getPostgresHost() {
-    return process.env.POSTGRES_HOST ?? 'localhost';
+    return process.env.DB_HOST ?? 'localhost';
   }
 
   public getPostgresPort() {
-    return Number(process.env.POSTGRES_PORT) ?? 5432;
+    return Number(process.env.DB_PORT) ?? 5432;
   }
 
   public getPostgresUser() {
-    return process.env.POSTGRES_USER ?? 'admin';
+    return process.env.DB_USER ?? 'admin';
   }
 
   public getPostgresPassword() {
-    return process.env.POSTGRES_PASSWORD ?? 'password';
+    return process.env.DB_PASSWORD ?? 'password';
   }
 
   public getPostgresDb() {
-    return process.env.POSTGRES_DB ?? 'book_db';
+    return process.env.DB_NAME ?? 'book_db';
   }
 }
 

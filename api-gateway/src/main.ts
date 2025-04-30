@@ -5,6 +5,7 @@ import { RpcExceptionFilter } from './filters/rpc-exception.filter';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pack = require('./../package.json');
+require('dotenv').config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,7 +18,7 @@ async function bootstrap() {
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.BROCKER_URI],
+      urls: [process.env.BROKER_URI],
       queue: pack.name,
       queueOptions: { durable: false },
     },

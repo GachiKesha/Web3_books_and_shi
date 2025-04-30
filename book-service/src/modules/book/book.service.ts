@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RpcException } from '@nestjs/microservices';
 import { Repository } from 'typeorm';
 import { Book } from '../../entities/book.entity';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -7,13 +8,15 @@ import { UpdateBookDto } from './dto/update-book.dto';
 
 @Injectable()
 export class BookService {
+  private readonly logger = new Logger(BookService.name);
+
   constructor(
     @InjectRepository(Book)
     private readonly bookRepository: Repository<Book>,
   ) {}
 
   async create(createBookDto: CreateBookDto): Promise<Book> {
-    const book = this.bookRepository.create(createBookDto);
+    const book = this.bookRepository.create(createBookDto);  
     return this.bookRepository.save(book);
   }
 
@@ -24,9 +27,9 @@ export class BookService {
   async findOne(id: string): Promise<Book> {
     const book = await this.bookRepository.findOne({
       where: { id: id }, 
-    });
+    });    
     if (!book) {
-      throw new NotFoundException(`Book with id ${id} not found`);
+      throw new RpcException(new NotFoundException(`Book with id ${id} not found`));
     }
     return book;
   }

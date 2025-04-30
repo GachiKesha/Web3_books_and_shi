@@ -1,6 +1,5 @@
 import {
   Controller,
-  Logger,
   Post,
   Body,
   UseGuards,
@@ -11,14 +10,10 @@ import { AuthGuard } from '../../guards/auth.guard';
 
 import { UserService } from './user.service';
 import { User, Login } from './dto';
-import { catchError, throwError } from 'rxjs';
-import { RpcException } from '@nestjs/microservices';
 
 @Controller('user')
 // @UseGuards(AuthGuard)
 export class UserController {
-  private readonly logger = new Logger(UserController.name);
-
   constructor(private readonly userService: UserService) {}
 
   @Post('register')

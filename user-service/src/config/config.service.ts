@@ -10,7 +10,7 @@ class ConfigService {
   }
 
   public getBrockerUri() {
-    return process.env.BROCKER_URI ?? 'amqp://guest:guest@127.0.0.1:5672';
+    return process.env.BROKER_URI ?? 'amqp://guest:guest@127.0.0.1:5672';
   }
 
   public getPort() {

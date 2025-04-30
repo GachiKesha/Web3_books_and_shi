@@ -3,5 +3,5 @@ export class CreateBookDto {
   author: string;
   description?: string;
   genre: string;
-  publication_year: number;
+  year: number;
 }

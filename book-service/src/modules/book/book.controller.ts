@@ -1,8 +1,9 @@
-import { Controller, Logger, Body, Param, Post, Get, Put } from '@nestjs/common';
+import { Controller, Logger, Body, Param} from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { Book } from '../../entities/book.entity';
+import { patterns } from '../patterns';
 
 @Controller('books')
 export class BookController {
@@ -10,30 +11,24 @@ export class BookController {
 
   constructor(private readonly bookService: BookService) {}
 
-  @Post()
-  async create(@Body() createBookDto: CreateBookDto): Promise<Book> {
-    this.logger.log('Creating new book');
+  @MessagePattern(patterns.BOOK.CREATE)
+  async create(@Payload() createBookDto: CreateBookDto) {
     return this.bookService.create(createBookDto);
   }
 
-  @Get()
-  async findAll(): Promise<Book[]> {
-    this.logger.log('Fetching all books');
+  @MessagePattern(patterns.BOOK.FIND_ALL)
+  async findAll() {
     return this.bookService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Book> {
-    this.logger.log('Fetching book with id ' + id);
-    return this.bookService.findOne(id);
+  @MessagePattern(patterns.BOOK.FIND_BY_ID)
+  async findOne(@Payload() data:{ id: string }) {
+    return this.bookService.findOne(data.id);
   }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateBookDto: UpdateBookDto,
-  ): Promise<Book> {
-    this.logger.log('Updating book with id ' + id);
+  @MessagePattern(patterns.BOOK.UPDATE)
+  async update(@Payload() data: { id: string, updateBookDto: UpdateBookDto}) {
+    const { id, updateBookDto } = data;
     return this.bookService.update(id, updateBookDto);
   }
 }
