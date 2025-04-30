@@ -10,7 +10,7 @@ class ConfigService {
   }
 
   public getBrokerUri() {
-    return process.env.BROKER_URI ?? 'amqp://rabbitmq:5672';
+    return process.env.BROKER_URI ?? 'amqp://guest:guest@rabbitmq:5672';
   }
 
   public getPort() {

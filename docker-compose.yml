@@ -1,0 +1,73 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  user_postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: users
+    ports:
+      - "5433:5432"
+
+  book_postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: books
+    ports:
+      - "5434:5432"
+
+  api-gateway:
+    build: ./api-gateway
+    depends_on:
+      - rabbitmq
+    environment:
+      BROKER_URI: amqp://guest:guest@rabbitmq:5672
+    ports:
+      - "3000:3000"
+
+  user-service:
+    build: ./user-service
+    depends_on:
+      - user_postgres
+      - rabbitmq
+    environment:
+      DB_HOST: user_postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: users
+      BROKER_URI: amqp://guest:guest@rabbitmq:5672
+    ports:
+      - "3001:3001"
+    #command: sh -c "npm run migration:run && npm run start:prod"
+
+  book-service:
+    build: ./book-service
+    depends_on:
+      - book_postgres
+      - rabbitmq
+    environment:
+      DB_HOST: book_postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: books
+      BROKER_URI: amqp://guest:guest@rabbitmq:5672
+    ports:
+      - "3002:3002"
+    #command: sh -c "npm run migration:run && npm run start:prod"

@@ -14,7 +14,7 @@ async function bootstrap() {
     {
       transport: Transport.RMQ,
       options: {
-        urls: [configService.getBrockerUri()],
+        urls: [configService.getBrokerUri()],
         queue: pack.name,
         queueOptions: { durable: false },
       },

@@ -1,4 +1,5 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { DataSource, DataSourceOptions } from 'typeorm';
 require('dotenv').config();
 
 export const typeOrmModuleOptions: PostgresConnectionOptions = {
@@ -12,3 +13,5 @@ export const typeOrmModuleOptions: PostgresConnectionOptions = {
   logging: ['warn', 'error'],
   synchronize: true,
 };
+
+export const connectionSource = new DataSource(typeOrmModuleOptions as DataSourceOptions)
