@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { RpcExceptionFilter } from './filters/rpc-exception.filter';
+import amqp from 'amqp-connection-manager';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pack = require('./../package.json');
@@ -18,7 +19,7 @@ async function bootstrap() {
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.BROKER_URI],
+      urls: [process.env.BROKER_URI ?? 'amqp://guest:guest@rabbitmq:5672'],
       queue: pack.name,
       queueOptions: { durable: false },
     },

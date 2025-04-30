@@ -30,7 +30,7 @@ describe('BookService', () => {
         title: 'Book Title',
         author: 'Author',
         genre: 'Genre',
-        year: 2021,
+        publication_year: 2021,
       };
       const result = {
         id: '1',
