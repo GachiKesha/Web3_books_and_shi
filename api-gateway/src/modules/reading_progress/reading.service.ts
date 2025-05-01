@@ -2,8 +2,7 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { timeout, catchError, throwError, firstValueFrom } from 'rxjs';
 
-import { CreateReadingDto } from './dto/create-progress.dto';
-import { UpdateReadingDto } from './dto/update-progress.dto';
+import { CreateReadingDto, UpdateReadingDto } from './dto/reading.dto';
 import { patterns } from '../patterns';
 
 @Injectable()
@@ -18,7 +17,7 @@ export class ReadingService {
     const res$ = this.readingClient.send(pattern, data).pipe(
       timeout(30000),
       catchError((e: any) => {
-        this.logger.error(e);
+        this.logger.error(e); 
         if (e.response) {
           return throwError(() => new RpcException(e.response));
         }

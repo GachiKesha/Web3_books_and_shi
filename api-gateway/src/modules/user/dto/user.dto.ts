@@ -1,10 +1,17 @@
-export interface User extends Login {
-  username: string;
-  role: string;
-}
+import { IsEmail, IsIn, IsString } from "class-validator";
 
-export interface Login {
+export class Login {
+  @IsEmail()
   email: string;
+
+  @IsString()
   password: string;
 }
-  
+
+export class User extends Login {
+  @IsString()
+  username: string;
+
+  @IsIn(['user', 'admin'])
+  role: string;
+}  

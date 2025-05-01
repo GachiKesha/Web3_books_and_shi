@@ -2,8 +2,7 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { timeout, catchError, throwError, firstValueFrom } from 'rxjs';
 
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
+import { CreateBookDto, UpdateBookDto } from './dto/book.dto';
 import { patterns } from '../patterns';
 
 @Injectable()

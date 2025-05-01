@@ -3,8 +3,8 @@ import { UpdateReadingDto } from "./update-progress.dto";
 
 export class CreateReadingDto extends UpdateReadingDto {
     @IsUUID()
-    user: string;
+    user_id: string;
 
     @IsUUID()
-    book: string;
+    book_id: string;
 }

@@ -18,7 +18,9 @@ export class ReadingService {
     ) {}
     
     async create(createReadingDto: CreateReadingDto): Promise<Reading> {
+        this.logger.log(createReadingDto);
         const reading = this.readingRepository.create(createReadingDto);
+        this.logger.log(reading);
         return this.readingRepository.save(reading);
     }
 

@@ -1,7 +1,6 @@
 import { Controller, Body, Param, Post, Get, Put } from '@nestjs/common';
 import { ReadingService } from './reading.service';
-import { CreateReadingDto } from './dto/create-progress.dto';
-import { UpdateReadingDto } from './dto/update-progress.dto';
+import { CreateReadingDto, UpdateReadingDto } from './dto/reading.dto';
 
 @Controller('reading_progress')
 export class ReadingController {
