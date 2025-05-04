@@ -38,16 +38,16 @@ describe('ReadingController', () => {
   describe(`@MessagePattern(${patterns.READING_PROGRESS.CREATE})`, () => {
     it('should call service.create with the dto', async () => {
       const dto: CreateReadingDto = {
-        user: v4(),
-        book: v4(),
+        user_id: v4(),
+        book_id: v4(),
         current_page: 20,
         percentage_read: 25.5,
       };
 
-      const expectedResult = { 
+      const expectedResult = {
         id: v4(),
-        user_id: dto.user,
-        book_id: dto.book,
+        user_id: dto.user_id,
+        book_id: dto.book_id,
         current_page: dto.current_page,
         percentage_read: dto.percentage_read,
       };
@@ -58,10 +58,9 @@ describe('ReadingController', () => {
 
       expect(service.create).toHaveBeenCalledWith(dto);
       expect(result).toHaveProperty('id');
-      expect(result.user_id).toBe(dto.user);
-      expect(result.book_id).toBe(dto.book);
+      expect(result.user_id).toBe(dto.user_id);
+      expect(result.book_id).toBe(dto.book_id);
       expect(result.current_page).toBe(dto.current_page);
-
     });
   });
 

@@ -4,7 +4,7 @@ import { CreateReadingDto, UpdateReadingDto } from './dto/reading.dto';
 
 @Controller('reading_progress')
 export class ReadingController {
-    constructor(private readonly readingService: ReadingService) {}
+  constructor(private readonly readingService: ReadingService) {}
 
   @Post()
   async create(@Body() createReadingDto: CreateReadingDto) {

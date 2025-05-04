@@ -19,17 +19,17 @@ export class BookController {
 
   @MessagePattern(patterns.BOOK.FIND_ALL)
   async findAll(@Payload() filters: FindBookDto) {
-    return this.bookService.findAll(filters);    
+    return this.bookService.findAll(filters);
   }
 
   @MessagePattern(patterns.BOOK.FIND_BY_ID)
-  async findOne(@Payload() data:{ id: string }) {
+  async findOne(@Payload() data: { id: string }) {
     return this.bookService.findOne(data.id);
   }
 
   @MessagePattern(patterns.BOOK.UPDATE)
-  async update(@Payload() data: { id: string, updateBookDto: UpdateBookDto}) {
+  async update(@Payload() data: { id: string; updateBookDto: UpdateBookDto }) {
     const { id, updateBookDto } = data;
     return this.bookService.update(id, updateBookDto);
-  }  
+  }
 }

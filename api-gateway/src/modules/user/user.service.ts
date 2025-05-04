@@ -20,8 +20,7 @@ export class UserService {
         this.logger.error(e);
         if (e.response) {
           return throwError(() => new RpcException(e.response));
-        }
-        else return throwError(() => e);
+        } else return throwError(() => e);
       }),
     );
     return firstValueFrom(res$);

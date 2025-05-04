@@ -38,8 +38,8 @@ describe('BookService', () => {
         author: 'Author',
         genre: 'Genre',
         description: 'Description of the book',
-        publication_year: 2021,  // Додаємо поле publication_year
-        file_url: 'http://example.com/book1.pdf',  // Додаємо поле file_url
+        publication_year: 2021, // Додаємо поле publication_year
+        file_url: 'http://example.com/book1.pdf', // Додаємо поле file_url
         created_at: new Date(),
       };
 
@@ -59,8 +59,8 @@ describe('BookService', () => {
           author: 'Author',
           description: 'Description of the book',
           genre: 'Genre',
-          publication_year: 2021,  // Додаємо поле publication_year
-          file_url: 'http://example.com/book1.pdf',  // Додаємо поле file_url
+          publication_year: 2021, // Додаємо поле publication_year
+          file_url: 'http://example.com/book1.pdf', // Додаємо поле file_url
           created_at: new Date(),
         },
         {
@@ -69,14 +69,14 @@ describe('BookService', () => {
           author: 'Another Author',
           description: 'Another description',
           genre: 'Another genre',
-          publication_year: 2020,  // Додаємо поле publication_year
-          file_url: 'http://example.com/book2.pdf',  // Додаємо поле file_url
+          publication_year: 2020, // Додаємо поле publication_year
+          file_url: 'http://example.com/book2.pdf', // Додаємо поле file_url
           created_at: new Date(),
         },
       ];
       jest.spyOn(repository, 'find').mockResolvedValue(result);
 
-      expect(await service.findAll()).toEqual(result);
+      expect(await service.findAll({})).toEqual(result);
     });
   });
 
@@ -88,8 +88,8 @@ describe('BookService', () => {
         author: 'Author',
         description: 'Description of the book',
         genre: 'Genre',
-        publication_year: 2021,  // Додаємо поле publication_year
-        file_url: 'http://example.com/book1.pdf',  // Додаємо поле file_url
+        publication_year: 2021, // Додаємо поле publication_year
+        file_url: 'http://example.com/book1.pdf', // Додаємо поле file_url
         created_at: new Date(),
       };
       jest.spyOn(repository, 'findOne').mockResolvedValue(result as any);
@@ -112,8 +112,8 @@ describe('BookService', () => {
         author: 'Old Author',
         description: 'Old Description',
         genre: 'Old Genre',
-        publication_year: 2000,  // Додаємо поле publication_year
-        file_url: 'http://example.com/old_book.pdf',  // Додаємо поле file_url
+        publication_year: 2000, // Додаємо поле publication_year
+        file_url: 'http://example.com/old_book.pdf', // Додаємо поле file_url
         created_at: new Date(),
       };
       const updateBookDto = {
@@ -126,8 +126,8 @@ describe('BookService', () => {
         ...updateBookDto,
         author: 'Old Author',
         description: 'Old Description',
-        publication_year: 2022,  // Додаємо поле publication_year
-        file_url: 'http://example.com/updated_book.pdf',  // Додаємо поле file_url
+        publication_year: 2022, // Додаємо поле publication_year
+        file_url: 'http://example.com/updated_book.pdf', // Додаємо поле file_url
         created_at: new Date(),
       };
 
@@ -140,7 +140,9 @@ describe('BookService', () => {
     it('should throw a NotFoundException if the book is not found for update', async () => {
       jest.spyOn(service, 'findOne').mockResolvedValue(null);
 
-      await expect(service.update('1', { title: 'Updated Title' })).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update('1', { title: 'Updated Title' }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -152,8 +154,8 @@ describe('BookService', () => {
         author: 'Author',
         description: 'Description of the book',
         genre: 'Genre',
-        publication_year: 2021,  // Додаємо поле publication_year
-        file_url: 'http://example.com/book1.pdf',  // Додаємо поле file_url
+        publication_year: 2021, // Додаємо поле publication_year
+        file_url: 'http://example.com/book1.pdf', // Додаємо поле file_url
         created_at: new Date(),
       };
       jest.spyOn(service, 'findOne').mockResolvedValue(book);

@@ -14,7 +14,7 @@ export class BookController {
   }
 
   @Get()
-  async findAll(@Query() filters: FindBookDto){
+  async findAll(@Query() filters: FindBookDto) {
     return this.bookService.findAll(filters);
   }
 
@@ -24,10 +24,7 @@ export class BookController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateBookDto: UpdateBookDto,
-  ) {
+  async update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
     return this.bookService.update(id, updateBookDto);
   }
 }

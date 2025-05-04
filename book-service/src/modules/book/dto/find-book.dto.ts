@@ -1,6 +1,6 @@
 export class FindBookDto {
-    genre?: string;
-    author?: string;
-    from?: number;
-    to?: number;
+  genre?: string;
+  author?: string;
+  from?: number;
+  to?: number;
 }

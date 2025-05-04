@@ -1,4 +1,4 @@
-import { IsEmail, IsIn, IsString } from "class-validator";
+import { IsEmail, IsIn, IsString } from 'class-validator';
 
 export class Login {
   @IsEmail()
@@ -14,4 +14,4 @@ export class User extends Login {
 
   @IsIn(['user', 'admin'])
   role: string;
-}  
+}

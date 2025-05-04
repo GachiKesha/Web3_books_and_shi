@@ -17,16 +17,16 @@ export class BookService {
   ) {}
 
   async create(createBookDto: CreateBookDto): Promise<Book> {
-    const book = this.bookRepository.create(createBookDto);  
+    const book = this.bookRepository.create(createBookDto);
     return this.bookRepository.save(book);
   }
 
-  async findAll(filters: FindBookDto): Promise<Book[]> { 
+  async findAll(filters: FindBookDto): Promise<Book[]> {
     const { genre, author, from, to } = filters;
     const queryBuilder = this.bookRepository.createQueryBuilder('book');
 
     genre && queryBuilder.andWhere('book.genre = :genre', { genre });
-    author  && queryBuilder.andWhere('book.author = :author', { author });
+    author && queryBuilder.andWhere('book.author = :author', { author });
     from && queryBuilder.andWhere('book.publication_year >= :from', { from });
     to && queryBuilder.andWhere('book.publication_year <= :to', { to });
 
@@ -35,10 +35,12 @@ export class BookService {
 
   async findOne(id: string): Promise<Book> {
     const book = await this.bookRepository.findOne({
-      where: { id: id }, 
-    });    
+      where: { id: id },
+    });
     if (!book) {
-      throw new RpcException(new NotFoundException(`Book with id ${id} not found`));
+      throw new RpcException(
+        new NotFoundException(`Book with id ${id} not found`),
+      );
     }
     return book;
   }

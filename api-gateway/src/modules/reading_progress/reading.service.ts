@@ -8,7 +8,7 @@ import { patterns } from '../patterns';
 @Injectable()
 export class ReadingService {
   private readonly logger = new Logger(ReadingService.name);
-  
+
   constructor(
     @Inject('READING_SERVICE') private readonly readingClient: ClientProxy,
   ) {}
@@ -17,11 +17,10 @@ export class ReadingService {
     const res$ = this.readingClient.send(pattern, data).pipe(
       timeout(30000),
       catchError((e: any) => {
-        this.logger.error(e); 
+        this.logger.error(e);
         if (e.response) {
           return throwError(() => new RpcException(e.response));
-        }
-        else return throwError(() => e);
+        } else return throwError(() => e);
       }),
     );
     return firstValueFrom(res$);
@@ -38,6 +37,9 @@ export class ReadingService {
 
   async update(id: string, updateReadingDto: UpdateReadingDto) {
     this.logger.log(`Updating reading progress by id: ${id}`);
-    return this.send(patterns.READING_PROGRESS.UPDATE, { id, updateReadingDto });
+    return this.send(patterns.READING_PROGRESS.UPDATE, {
+      id,
+      updateReadingDto,
+    });
   }
 }

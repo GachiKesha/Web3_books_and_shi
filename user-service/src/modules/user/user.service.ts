@@ -1,8 +1,14 @@
-import { BadRequestException, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt';
 
 import { AuthService } from '../auth/auth.service';
 
@@ -37,7 +43,9 @@ export class UserService {
     };
 
     if (await this.findUserByEmail(email)) {
-      throw new RpcException(new BadRequestException('Invalid request. Please check your input.'));
+      throw new RpcException(
+        new BadRequestException('Invalid request. Please check your input.'),
+      );
     }
     const user = this.userRepository.create(userData);
 
@@ -48,17 +56,17 @@ export class UserService {
     });
   }
 
-  async login(dto: UserDTO)  {
+  async login(dto: UserDTO) {
     const { email, password } = dto;
 
     const user = await this.findUserByEmail(email);
-    const isCorrect = user && await bcrypt.compare(password, user.password);
+    const isCorrect = user && (await bcrypt.compare(password, user.password));
     if (!isCorrect) {
       throw new RpcException(new UnauthorizedException('Invalid credentials'));
     }
     return this.authService.generateTokens({
       member_id: user.id,
-    })
+    });
   }
 
   async findAllUsers() {

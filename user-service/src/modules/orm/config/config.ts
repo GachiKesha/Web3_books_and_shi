@@ -14,4 +14,6 @@ export const typeOrmModuleOptions: PostgresConnectionOptions = {
   synchronize: true,
 };
 
-export const connectionSource = new DataSource(typeOrmModuleOptions as DataSourceOptions)
+export const connectionSource = new DataSource(
+  typeOrmModuleOptions as DataSourceOptions,
+);

@@ -10,7 +10,7 @@ import { patterns } from '../patterns';
 @Injectable()
 export class BookService {
   private readonly logger = new Logger(BookService.name);
-  
+
   constructor(
     @Inject('BOOK_SERVICE') private readonly bookClient: ClientProxy,
   ) {}
@@ -22,8 +22,7 @@ export class BookService {
         this.logger.error(e);
         if (e.response) {
           return throwError(() => new RpcException(e.response));
-        }
-        else return throwError(() => e);
+        } else return throwError(() => e);
       }),
     );
     return firstValueFrom(res$);
