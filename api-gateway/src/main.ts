@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { RpcExceptionFilter } from './filters/rpc-exception.filter';
-import amqp from 'amqp-connection-manager';
 import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

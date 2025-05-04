@@ -1,9 +1,10 @@
-import { Controller, Logger, Body, Param} from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { patterns } from '../patterns';
+import { FindBookDto } from './dto/find-book.dto';
 
 @Controller('books')
 export class BookController {
@@ -17,8 +18,8 @@ export class BookController {
   }
 
   @MessagePattern(patterns.BOOK.FIND_ALL)
-  async findAll() {
-    return this.bookService.findAll();
+  async findAll(@Payload() filters: FindBookDto) {
+    return this.bookService.findAll(filters);    
   }
 
   @MessagePattern(patterns.BOOK.FIND_BY_ID)
@@ -30,5 +31,5 @@ export class BookController {
   async update(@Payload() data: { id: string, updateBookDto: UpdateBookDto}) {
     const { id, updateBookDto } = data;
     return this.bookService.update(id, updateBookDto);
-  }
+  }  
 }

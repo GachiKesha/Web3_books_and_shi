@@ -2,7 +2,9 @@ import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { timeout, catchError, throwError, firstValueFrom } from 'rxjs';
 
-import { CreateBookDto, UpdateBookDto } from './dto/book.dto';
+import { CreateBookDto } from './dto/create-book.dto';
+import { UpdateBookDto } from './dto/update-book.dto';
+import { FindBookDto } from './dto/find-book.dto';
 import { patterns } from '../patterns';
 
 @Injectable()
@@ -32,8 +34,9 @@ export class BookService {
     return this.send(patterns.BOOK.CREATE, createBookDto);
   }
 
-  async findAll() {
-    return this.send(patterns.BOOK.FIND_ALL, {});
+  async findAll(filters: FindBookDto) {
+    this.logger.log('Returning books');
+    return this.send(patterns.BOOK.FIND_ALL, filters);
   }
 
   async findOne(id: string) {
