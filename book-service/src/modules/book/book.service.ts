@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Book } from '../../entities/book.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { FindBookDto } from './dto/find-book.dto';
 
 @Injectable()
 export class BookService {
@@ -20,8 +21,16 @@ export class BookService {
     return this.bookRepository.save(book);
   }
 
-  async findAll(): Promise<Book[]> {
-    return this.bookRepository.find();
+  async findAll(filters: FindBookDto): Promise<Book[]> { 
+    const { genre, author, from, to } = filters;
+    const queryBuilder = this.bookRepository.createQueryBuilder('book');
+
+    genre && queryBuilder.andWhere('book.genre = :genre', { genre });
+    author  && queryBuilder.andWhere('book.author = :author', { author });
+    from && queryBuilder.andWhere('book.publication_year >= :from', { from });
+    to && queryBuilder.andWhere('book.publication_year <= :to', { to });
+
+    return queryBuilder.getMany();
   }
 
   async findOne(id: string): Promise<Book> {

@@ -3,6 +3,6 @@ export class UpdateBookDto {
   author?: string;
   description?: string;
   genre?: string;
-  year?: number;
+  publication_year?: number;
 }
   

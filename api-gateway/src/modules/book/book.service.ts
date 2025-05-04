@@ -5,6 +5,7 @@ import { timeout, catchError, throwError, firstValueFrom } from 'rxjs';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { patterns } from '../patterns';
+import { FindBookDto } from './dto/find-book.dto';
 
 @Injectable()
 export class BookService {
@@ -33,8 +34,9 @@ export class BookService {
     return this.send(patterns.BOOK.CREATE, createBookDto);
   }
 
-  async findAll() {
-    return this.send(patterns.BOOK.FIND_ALL, {});
+  async findAll(filters: FindBookDto) {
+    this.logger.log('Returning books');
+    return this.send(patterns.BOOK.FIND_ALL, filters);
   }
 
   async findOne(id: string) {
