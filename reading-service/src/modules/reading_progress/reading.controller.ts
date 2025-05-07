@@ -28,4 +28,9 @@ export class ReadingController {
     const { id, updateReadingDto } = data;
     return this.readingService.update(id, updateReadingDto);
   }
+
+  @MessagePattern(patterns.BOOK.RECOMMEND)
+  async getRecommendations(@Payload() userId: string) {
+    return this.readingService.getRecommendations(userId);
+  }
 }

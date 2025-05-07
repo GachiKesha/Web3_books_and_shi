@@ -32,4 +32,9 @@ export class BookController {
     const { id, updateBookDto } = data;
     return this.bookService.update(id, updateBookDto);
   }
+
+  @MessagePattern(patterns.BOOK.RECOMMEND)
+  async getRecommendations(@Payload() data: string[]) {
+    return this.bookService.recommend(data);
+  }
 }

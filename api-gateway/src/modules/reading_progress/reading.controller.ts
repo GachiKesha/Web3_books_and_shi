@@ -23,4 +23,9 @@ export class ReadingController {
   ) {
     return this.readingService.update(id, updateReadingDto);
   }
+
+  @Get('recomend/:userId')
+  async getRecommendations(@Param('userId') id: string) {
+    return this.readingService.getRecommendations(id);
+  }
 }

@@ -42,4 +42,9 @@ export class ReadingService {
       updateReadingDto,
     });
   }
+
+  async getRecommendations(userId: string) {
+    this.logger.log(`Finding recomendations for user: ${userId}`);
+    return this.send(patterns.READING_PROGRESS.RECOMMEND, userId);
+  }
 }

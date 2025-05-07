@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
 
     try {
       const user = await firstValueFrom(
-        this.userClient.send({ cmd: 'auth.verify' }, { token }),
+        this.userClient.send({ cmd: 'auth.verify' }, token),
       );
 
       // Attach user to request for use in controllers

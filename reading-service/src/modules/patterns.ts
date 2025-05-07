@@ -5,4 +5,7 @@ export const patterns = {
     FIND_ALL: { cmd: 'find_all_books_in_reading_by_user' },
     DELETE: { cmd: 'delete_progress' },
   },
+  BOOK: {
+    RECOMMEND: { cmd: 'recommend_books' },
+  },
 };
