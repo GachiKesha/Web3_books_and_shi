@@ -14,7 +14,7 @@ class ConfigService {
   }
 
   public getPort() {
-    return process.env.PORT ?? 3002;
+    return process.env.PORT ?? 3003;
   }
 
   public getPostgresHost() {

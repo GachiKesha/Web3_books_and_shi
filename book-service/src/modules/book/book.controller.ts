@@ -22,6 +22,11 @@ export class BookController {
     return this.bookService.findAll(filters);
   }
 
+  @MessagePattern(patterns.BOOK.FIND_COLUMN)
+  async findColumn(@Payload() column: string) {
+    return this.bookService.findColumn(column);
+  }
+
   @MessagePattern(patterns.BOOK.FIND_BY_ID)
   async findOne(@Payload() data: { id: string }) {
     return this.bookService.findOne(data.id);

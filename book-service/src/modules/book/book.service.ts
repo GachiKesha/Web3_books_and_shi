@@ -22,13 +22,18 @@ export class BookService {
   }
 
   async findAll(filters: FindBookDto): Promise<Book[]> {
-    const { genre, author, from, to } = filters;
+    const { page, limit, genre, author, from, to } = filters;
     const queryBuilder = this.bookRepository.createQueryBuilder('book');
 
     genre && queryBuilder.andWhere('book.genre = :genre', { genre });
     author && queryBuilder.andWhere('book.author = :author', { author });
     from && queryBuilder.andWhere('book.publication_year >= :from', { from });
     to && queryBuilder.andWhere('book.publication_year <= :to', { to });
+
+    if (limit > 0) {
+      queryBuilder.take(limit);
+      queryBuilder.skip((page - 1) * limit);
+    }
 
     return queryBuilder.getMany();
   }
@@ -43,6 +48,19 @@ export class BookService {
       );
     }
     return book;
+  }
+
+  async findColumn(column: string): Promise<string[]> {
+    const allowedCollumns: (keyof Book)[] = ['author', 'genre'];
+    if (allowedCollumns.includes(column as keyof Book)) {
+      var values = await this.bookRepository
+        .createQueryBuilder('book')
+        .select(`DISTINCT book.${column}`, column)
+        .getRawMany();
+      values = values.map((row) => row[column]);
+      this.logger.log(values);
+      return values;
+    }
   }
 
   async update(id: string, updateBookDto: UpdateBookDto): Promise<Book> {

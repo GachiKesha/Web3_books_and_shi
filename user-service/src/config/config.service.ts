@@ -14,7 +14,7 @@ class ConfigService {
   }
 
   public getPort() {
-    return process.env.PORT ?? 3001;
+    return process.env.PORT ?? 3002;
   }
 }
 

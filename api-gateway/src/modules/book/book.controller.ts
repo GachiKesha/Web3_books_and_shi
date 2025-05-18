@@ -18,6 +18,11 @@ export class BookController {
     return this.bookService.findAll(filters);
   }
 
+  @Get('/column/:column')
+  async findColumn(@Param('column') column: string) {
+    return this.bookService.findColumn(column);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.bookService.findOne(id);

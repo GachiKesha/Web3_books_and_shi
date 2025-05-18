@@ -33,6 +33,11 @@ export class BookService {
     return this.send(patterns.BOOK.CREATE, createBookDto);
   }
 
+  async findColumn(column: string) {
+    this.logger.log(`Returning ${column}`);
+    return this.send(patterns.BOOK.FIND_COLUMN, column);
+  }
+
   async findAll(filters: FindBookDto) {
     this.logger.log('Returning books');
     return this.send(patterns.BOOK.FIND_ALL, filters);
