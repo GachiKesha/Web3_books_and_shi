@@ -47,8 +47,9 @@ services:
       - rabbitmq
     environment:
       BROKER_URI: amqp://guest:guest@rabbitmq:5672
+      FRONTEND_URL: http://localhost:3000
     ports:
-      - "3000:3000"
+      - "3001:3001"
 
   user-service:
     build: ./user-service
@@ -63,8 +64,7 @@ services:
       DB_NAME: users
       BROKER_URI: amqp://guest:guest@rabbitmq:5672
     ports:
-      - "3001:3001"
-    #command: sh -c "npm run migration:run && npm run start:prod"
+      - "3002:3002"
 
   book-service:
     build: ./book-service
@@ -79,8 +79,7 @@ services:
       DB_NAME: books
       BROKER_URI: amqp://guest:guest@rabbitmq:5672
     ports:
-      - "3002:3002"
-    #command: sh -c "npm run migration:run && npm run start:prod"
+      - "3003:3003"
 
   reading-service:
     build: ./reading-service
@@ -95,5 +94,11 @@ services:
       DB_NAME: readings
       BROKER_URI: amqp://guest:guest@rabbitmq:5672
     ports:
-      - "3003:3003"
-    #command: sh -c "npm run migration:run && npm run start:prod"
+      - "3004:3004"
+
+  frontend-service:
+    build: ./frontend-service
+    environment:
+      BACKEND_URL: http://127.0.0.1:3001
+    ports:
+      - "3000:3000"
