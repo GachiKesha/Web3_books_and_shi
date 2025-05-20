@@ -21,7 +21,9 @@ export default function HomePage() {
   useEffect(() => {
     console.log("Change of filters");
     setBooks([]);
-    setPage(1);
+    if (page === 1) {
+      fetchBooks();
+    } else setPage(1);
   }, [selectedAuthor, selectedGenre]);
 
   useEffect(() => {
