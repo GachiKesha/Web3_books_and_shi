@@ -97,7 +97,7 @@ export default function HomePage() {
     <div>
       <Header />
       <div className="container mx-auto mt-6">
-        <div className="flex justify-around bg-gray-100 p-4 rounded shadow">
+        <div className="flex justify-around bg-orange-300 dark:bg-gray-100 p-4 rounded shadow">
           <button
             className="px-6 py-3 bg-blue-500 text-white rounded-xl shadow hover:bg-blue-600"
             onClick={() => setSearchOpen(true)}
@@ -153,10 +153,10 @@ export default function HomePage() {
 
         <div
           id="book-container"
-          className="grid gap-6 p-6 bg-gray-100 overflow-auto w-full"
+          className="grid gap-[35px] p-[40px] bg-orange-200 dark:bg-gray-100 overflow-auto w-full"
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
+            gridTemplateColumns: "repeat(4, 1fr)",
             gridAutoRows: "minmax(300px, auto)",
             maxWidth: "100%",
           }}
@@ -178,7 +178,7 @@ const BookCard = ({ book }: { book: Book }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative flex flex-col justify-between items-center bg-white shadow-md rounded-md">
+    <div className="relative flex flex-col justify-between items-center dark:bg-white bg-yellow-100 shadow-md rounded-md">
       <div className="relative w-full flex flex-col items-center">
         {isOpen && (
           <div className="absolute inset-0 p-4 bg-white flex flex-col justify-center text-gray-700 shadow-md rounded-md">
@@ -203,11 +203,11 @@ const BookCard = ({ book }: { book: Book }) => {
             className="w-full h-auto object-cover rounded-md"
           />
         </div>
-        <p className="mt-2 text-lg font-semibold text-gray-700 text-center">
+        <p className="ml-4 mr-4 font-semibold text-gray-700 text-center">
           {book.title}
         </p>
       </div>
-      <div className="flex gap-2 m-2">
+      <div className="flex gap-2 m-4">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="px-3 py-1 bg-gray-300 text-black rounded shadow hover:bg-gray-400"
@@ -216,7 +216,7 @@ const BookCard = ({ book }: { book: Book }) => {
         </button>
         <button
           onClick={() => navigate(`/read/${book.id}`)}
-          className="px-3 py-1 bg-green-500 text-white rounded shadow hover:bg-green-600"
+          className="px-3 py-1 bg-orange-600 text-white rounded shadow hover:bg-orange-700"
         >
           Start Reading
         </button>
