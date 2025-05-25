@@ -12,11 +12,11 @@ export default function HomePage() {
   const [isError, setIsError] = useState(false);
   const [genres, setGenres] = useState<string[]>([]);
   const [authors, setAuthors] = useState<string[]>([]);
-  const [selectedGenre, setSelectedGenre] = useState("");
-  const [selectedAuthor, setSelectedAuthor] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState("_");
+  const [selectedAuthor, setSelectedAuthor] = useState("_");
   const [searchOpen, setSearchOpen] = useState(false);
   const scrollRef = useRef(null);
-  const limit = 5;
+  const limit = 4;
 
   useEffect(() => {
     console.log("Change of filters");
@@ -61,6 +61,7 @@ export default function HomePage() {
   }, [page]);
 
   const fetchBooks = async () => {
+    if (selectedAuthor == "_" || selectedGenre == "_") return;
     setIsLoading(true);
     setIsError(false);
 
@@ -80,6 +81,7 @@ export default function HomePage() {
   };
 
   const fetchAuthors = async () => {
+    setSelectedAuthor("");
     const [data, ok] = await getColumn("author");
     if (ok) {
       setAuthors(data.sort());
@@ -87,6 +89,7 @@ export default function HomePage() {
   };
 
   const fetchGenres = async () => {
+    setSelectedGenre("");
     const [data, ok] = await getColumn("genre");
     if (ok) {
       setGenres(data.sort());
