@@ -39,3 +39,9 @@ export async function getColumn(column: string): Promise<[string[], boolean]> {
   const json = await res.json();
   return [json, res.ok];
 }
+
+export async function getCover(book_id: string): Promise<Blob> {
+  const res = await fetch(`${backendUrl}/api/books/covers/${book_id}`);
+  if (!res.ok) throw new Error("Cover not found");
+  return res.blob();
+}

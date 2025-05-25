@@ -37,4 +37,10 @@ export class BookController {
     const { id, updateBookDto } = data;
     return this.bookService.update(id, updateBookDto);
   }
+
+  @MessagePattern('get_cover')
+  async getCover(@Payload() id: string): Promise<string | null> {
+    const buffer = await this.bookService.getCoverById(id);
+    return buffer?.toString('base64') ?? null;
+  }
 }

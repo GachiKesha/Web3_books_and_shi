@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 import { useState, useEffect, useRef } from "react";
-import { getBooks, getColumn, type Book } from "../components/books";
+import { getBooks, getColumn, getCover, type Book } from "../components/books";
 import Header from "../components/Header";
 
 export default function HomePage() {
@@ -175,7 +175,24 @@ export default function HomePage() {
 
 const BookCard = ({ book }: { book: Book }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [coverUrl, setCoverUrl] = useState<string>("/book_cover.jpg");
   const navigate = useNavigate();
+
+  const loadCover = async (id: string) => {
+    try {
+      const blob = await getCover(id);
+      setCoverUrl(URL.createObjectURL(blob));
+    } catch {
+      console.warn("Error with cover fetching");
+      setCoverUrl("/book_cover.jpg");
+    }
+  };
+
+  useEffect(() => {
+    if (!book.file_url) return;
+
+    loadCover(book.id);
+  }, [book]);
 
   return (
     <div className="relative flex flex-col justify-between items-center dark:bg-white bg-yellow-100 shadow-md rounded-md">
@@ -198,7 +215,7 @@ const BookCard = ({ book }: { book: Book }) => {
         )}
         <div className="w-full p-4 flex-shrink-0">
           <img
-            src={book.file_url || "/book_cover.jpg"}
+            src={coverUrl}
             alt={book.title}
             className="w-full h-auto object-cover rounded-md"
           />
