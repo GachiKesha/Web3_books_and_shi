@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { useState, useEffect, useRef } from "react";
 import { getBooks, getColumn, getCover, type Book } from "../components/books";
 import Header from "../components/Header";
+import BookControlButtons from "../components/Controlls";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -100,23 +101,7 @@ export default function HomePage() {
     <div>
       <Header />
       <div className="container mx-auto mt-6">
-        <div className="flex justify-around bg-orange-300 dark:bg-gray-100 p-4 rounded shadow">
-          <button
-            className="px-6 py-3 bg-blue-500 text-white rounded-xl shadow hover:bg-blue-600"
-            onClick={() => setSearchOpen(true)}
-          >
-            Search
-          </button>
-          <button className="px-6 py-3 bg-blue-500 text-white rounded-xl shadow hover:bg-blue-600">
-            My Books
-          </button>
-          <button
-            onClick={() => navigate("/")}
-            className="px-6 py-3 bg-gray-300 text-black rounded-xl shadow hover:bg-gray-400"
-          >
-            Back to Main Page
-          </button>
-        </div>
+        <BookControlButtons onSearchOpen={setSearchOpen} />
 
         {searchOpen && (
           <div className="absolute top-16 left-1/2 transform -translate-x-1/2 bg-white p-6 rounded-md shadow-md z-50 text-black">
@@ -235,7 +220,11 @@ const BookCard = ({ book }: { book: Book }) => {
           ...
         </button>
         <button
-          onClick={() => navigate(`/read/${book.id}`)}
+          onClick={() => {
+            navigate(`/read/${book.id}`, {
+              state: { file_url: book.file_url },
+            });
+          }}
           className="px-3 py-1 bg-orange-600 text-white rounded shadow hover:bg-orange-700"
         >
           Start Reading

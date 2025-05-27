@@ -22,10 +22,11 @@ export class AuthGuard implements CanActivate {
     if (!token) {
       return false;
     }
+    this.logger.log(`Token sent for verification: ${token}`);
 
     try {
       const user = await firstValueFrom(
-        this.userClient.send({ cmd: 'auth.verify' }, { token }),
+        this.userClient.send({ cmd: 'auth.verify' }, token),
       );
 
       // Attach user to request for use in controllers

@@ -6,9 +6,6 @@ import { Book } from '../../entities/book.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { FindBookDto } from './dto/find-book.dto';
-import { extractAndSaveCover } from './extractor';
-import * as fs from 'fs/promises';
-import * as path from 'path';
 
 @Injectable()
 export class BookService {
@@ -38,23 +35,7 @@ export class BookService {
       queryBuilder.skip((page - 1) * limit);
     }
 
-    const books = await queryBuilder.getMany();
-
-    // Extract covers (only if not present)
-    await Promise.all(
-      books.map((book) => {
-        if (book.file_url) {
-          const epubPath = path.resolve('books', book.file_url);
-          this.logger.log('EPUB', epubPath);
-          return extractAndSaveCover(book.id, epubPath);
-        } else {
-          this.logger.log(`No epub for book ${book.id}`);
-          return;
-        }
-      }),
-    );
-
-    return books;
+    return await queryBuilder.getMany();
   }
 
   async findOne(id: string): Promise<Book> {
@@ -91,17 +72,5 @@ export class BookService {
   async delete(id: string): Promise<void> {
     const book = await this.findOne(id); // Validate if the book exists
     await this.bookRepository.remove(book); // Remove the book from the repository
-  }
-
-  async getCoverById(id: string): Promise<Buffer | null> {
-    const coverPath = path.resolve('books', 'covers', `${id}.jpg`);
-
-    try {
-      return await fs.readFile(coverPath);
-    } catch (err) {
-      throw new RpcException(
-        new NotFoundException(`Cover for book ${id} not found`),
-      );
-    }
   }
 }

@@ -1,6 +1,16 @@
-import { Controller, Body, Param, Post, Get, Put } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Param,
+  Post,
+  Get,
+  Put,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ReadingService } from './reading.service';
 import { CreateReadingDto, UpdateReadingDto } from './dto/reading.dto';
+import { AuthGuard } from '../../guards/auth.guard';
 
 @Controller('reading_progress')
 export class ReadingController {
@@ -11,8 +21,10 @@ export class ReadingController {
     return this.readingService.create(createReadingDto);
   }
 
-  @Get(':userId')
-  async findAll(@Param('userId') userId: string) {
+  @UseGuards(AuthGuard)
+  @Get('my')
+  async findAll(@Request() req) {
+    const userId = req.user.member_id;
     return this.readingService.findAll(userId);
   }
 

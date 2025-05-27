@@ -46,7 +46,9 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const [res, ok] = await login(email, password);
+      const [resP, ok] = await login(email, password);
+      const res = await resP;
+      console.log(res);
 
       if (ok) {
         sessionStorage.setItem("accessToken", res.accessToken);

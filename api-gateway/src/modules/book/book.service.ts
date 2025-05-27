@@ -57,9 +57,4 @@ export class BookService {
     this.logger.log(`Deleting book by id: ${id}`);
     return this.send(patterns.BOOK.DELETE, { id });
   }
-
-  async getCover(id: string) {
-    this.logger.log(`Cover for ${id}`);
-    return this.send('get_cover', id);
-  }
 }

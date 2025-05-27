@@ -1,0 +1,157 @@
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router';
+import { FiMenu } from 'react-icons/fi';
+import Epub, { Book, Rendition, type Location, type NavItem } from 'epubjs';
+import {
+  saveReadingProgress,
+  getBookPath,
+  getBookContentUrl,
+} from '../components/books';
+import Header from '../components/Header';
+
+export default function ReadBookPage() {
+  const { bookId } = useParams();
+  const [token, setToken] = useState('');
+  const [bookUrl, setBookUrl] = useState<string | null>(null);
+  const [percentRead, setPercentRead] = useState<number>(0);
+  const [pageStr, setPageStr] = useState<string>('');
+  const [location, setLocation] = useState<string | null>(null);
+  const [toc, setToc] = useState<NavItem[]>([]);
+  const [isTocOpen, setIsTocOpen] = useState(false);
+
+  const bookRef = useRef<Book>(null);
+  const renditionRef = useRef<Rendition>(null);
+  const viewerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const t = sessionStorage.getItem('accessToken');
+    if (!t) {
+      alert('Not logged in');
+      return;
+    }
+    setToken(t);
+
+    getBookPath(bookId!).then((path) => {
+      setBookUrl(getBookContentUrl(path));
+      setLocation(localStorage.getItem(`epub-location-${bookId}`));
+    });
+  }, [bookId]);
+
+  useEffect(() => {
+    if (!bookUrl || !viewerRef.current) return;
+    try {
+      bookRef.current = Epub(bookUrl);
+      bookRef.current.ready
+        .then(() => {
+          console.log('Book fully loaded');
+          return bookRef.current!.locations.generate(1000);
+        })
+        .then(() => {
+          renditionRef.current = bookRef.current!.renderTo(viewerRef.current!, {
+            width: '100%',
+            height: '100%',
+            spread: 'none',
+          });
+
+          renditionRef.current.display(location || undefined);
+          setToc(bookRef.current!.navigation.toc);
+
+          renditionRef.current?.on('relocated', (loc: Location) => {
+            const percent =
+              renditionRef.current!.book.locations.percentageFromCfi(
+                loc.start.cfi,
+              ) * 100;
+            const match = loc.start.cfi.match(/\[(.*?)\]/);
+            const chapterId = match ? match[1] : '';
+            const chapter = renditionRef.current!.book.navigation.toc.find(
+              (item) => item.href.includes(chapterId),
+            );
+            setPercentRead(percent);
+            setPageStr(
+              `Page ${loc.start.displayed.page} / ${loc.start.displayed.total} in chapter ${chapter?.label || 'n/a'}`,
+            );
+
+            localStorage.setItem(`epub-location-${bookId}`, loc.start.cfi);
+            saveReadingProgress(
+              bookId!,
+              token,
+              loc.start.displayed.page,
+              percent,
+            );
+          });
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  }, [bookUrl, location]);
+
+  const nextPage = () => {
+    renditionRef.current?.next();
+  };
+
+  const prevPage = () => {
+    renditionRef.current?.prev();
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto relative">
+      <Header />
+
+      {/* TOC Menu & Dropdown (Under Header, Over Viewer) */}
+      <div className="absolute top-16 left-2 z-50">
+        {/* Hamburger Button */}
+        <button
+          onClick={() => setIsTocOpen(!isTocOpen)}
+          className="px-3 py-2 bg-gray-800 text-white rounded"
+        >
+          <FiMenu size={24} />
+        </button>
+
+        {/* TOC Dropdown Appears Below Button */}
+        {isTocOpen && (
+          <div className="mt-2 w-64 bg-black shadow-md p-4 rounded opacity-90">
+            <h2 className="font-bold text-lg text-white mb-2">
+              Table of Contents
+            </h2>
+            <ul>
+              {toc.map((chapter) => (
+                <li key={chapter.href}>
+                  <button
+                    onClick={() => {
+                      renditionRef.current?.display(chapter.href);
+                      setIsTocOpen(false);
+                    }}
+                    className="block w-full text-left p-2 hover:bg-gray-600 rounded"
+                  >
+                    {chapter.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Book Viewer */}
+      <div className="h-[83vh] border rounded shadow bg-white p-2 relative">
+        <div ref={viewerRef} className="h-full"></div>
+
+        {/* Navigation Buttons */}
+        <div className="flex border rounded bg-white p-2 mt-4 text-center text-gray-700 h-auto">
+          <button onClick={prevPage} className="px-4 py-2 bg-gray-400 rounded">
+            Previous
+          </button>
+          <div className="flex-grow">
+            {pageStr} | {Math.round(percentRead)}%
+          </div>
+          <button
+            onClick={nextPage}
+            className="px-4 py-2 bg-orange-400 text-white rounded"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
