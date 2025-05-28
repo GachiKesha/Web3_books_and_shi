@@ -35,11 +35,23 @@ export class ReadingService {
     return this.send(patterns.READING_PROGRESS.FIND_ALL, userId);
   }
 
+  async findByBook(userId: string, bookId: string) {
+    return this.send(patterns.READING_PROGRESS.FIND_BY_BOOK, {
+      userId,
+      bookId,
+    });
+  }
+
   async update(id: string, updateReadingDto: UpdateReadingDto) {
     this.logger.log(`Updating reading progress by id: ${id}`);
     return this.send(patterns.READING_PROGRESS.UPDATE, {
       id,
       updateReadingDto,
     });
+  }
+
+  async getRecommendations(userId: string) {
+    this.logger.log(`Finding recomendations for user: ${userId}`);
+    return this.send(patterns.READING_PROGRESS.RECOMMEND, userId);
   }
 }

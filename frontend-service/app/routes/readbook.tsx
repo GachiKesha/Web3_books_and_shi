@@ -6,8 +6,12 @@ import {
   saveReadingProgress,
   getBookPath,
   getBookContentUrl,
+  getReadingProgress,
+  type Book as myBook,
+  getRecommendations,
 } from '../components/books';
 import Header from '../components/Header';
+import BookCard from '~/components/bookcard';
 
 export default function ReadBookPage() {
   const { bookId } = useParams();
@@ -18,6 +22,11 @@ export default function ReadBookPage() {
   const [location, setLocation] = useState<string | null>(null);
   const [toc, setToc] = useState<NavItem[]>([]);
   const [isTocOpen, setIsTocOpen] = useState(false);
+  const existingReading = useRef<string>('');
+  const percent = useRef(0);
+
+  const [recommendedBooks, setRecommendedBooks] = useState<myBook[]>([]);
+  const [showRecommendations, setShowRecommendations] = useState(false);
 
   const bookRef = useRef<Book>(null);
   const renditionRef = useRef<Rendition>(null);
@@ -33,7 +42,15 @@ export default function ReadBookPage() {
 
     getBookPath(bookId!).then((path) => {
       setBookUrl(getBookContentUrl(path));
-      setLocation(localStorage.getItem(`epub-location-${bookId}`));
+      const cfi = localStorage.getItem(`epub-location-${bookId}`);
+      getReadingProgress(bookId!, t).then(({ id, perc }) => {
+        console.log('get:', id, perc);
+        existingReading.current = id;
+        percent.current = perc;
+      });
+      if (cfi !== null) {
+        setLocation(cfi);
+      }
     });
   }, [bookId]);
 
@@ -53,7 +70,10 @@ export default function ReadBookPage() {
             spread: 'none',
           });
 
-          renditionRef.current.display(location || undefined);
+          renditionRef.current.display(
+            location ||
+              bookRef.current!.locations.cfiFromPercentage(percent.current),
+          );
           setToc(bookRef.current!.navigation.toc);
 
           renditionRef.current?.on('relocated', (loc: Location) => {
@@ -72,12 +92,27 @@ export default function ReadBookPage() {
             );
 
             localStorage.setItem(`epub-location-${bookId}`, loc.start.cfi);
+            console.log(existingReading.current);
             saveReadingProgress(
+              existingReading.current,
               bookId!,
               token,
               loc.start.displayed.page,
               percent,
-            );
+            )
+              .then((id) => (existingReading.current = id))
+              .catch((err) => console.error(err));
+
+            if (Math.round(percent) === 100 && !showRecommendations) {
+              getRecommendations(token)
+                .then((data) => {
+                  setRecommendedBooks(data);
+                  setShowRecommendations(true);
+                })
+                .catch((err) =>
+                  console.error('Failed to fetch recommendations', err),
+                );
+            } else setShowRecommendations(false);
           });
         });
     } catch (err) {
@@ -96,10 +131,7 @@ export default function ReadBookPage() {
   return (
     <div className="max-w-5xl mx-auto relative">
       <Header />
-
-      {/* TOC Menu & Dropdown (Under Header, Over Viewer) */}
       <div className="absolute top-16 left-2 z-50">
-        {/* Hamburger Button */}
         <button
           onClick={() => setIsTocOpen(!isTocOpen)}
           className="px-3 py-2 bg-gray-800 text-white rounded"
@@ -107,7 +139,6 @@ export default function ReadBookPage() {
           <FiMenu size={24} />
         </button>
 
-        {/* TOC Dropdown Appears Below Button */}
         {isTocOpen && (
           <div className="mt-2 w-64 bg-black shadow-md p-4 rounded opacity-90">
             <h2 className="font-bold text-lg text-white mb-2">
@@ -132,26 +163,42 @@ export default function ReadBookPage() {
         )}
       </div>
 
-      {/* Book Viewer */}
-      <div className="h-[83vh] border rounded shadow bg-white p-2 relative">
-        <div ref={viewerRef} className="h-full"></div>
-
-        {/* Navigation Buttons */}
-        <div className="flex border rounded bg-white p-2 mt-4 text-center text-gray-700 h-auto">
-          <button onClick={prevPage} className="px-4 py-2 bg-gray-400 rounded">
-            Previous
-          </button>
-          <div className="flex-grow">
-            {pageStr} | {Math.round(percentRead)}%
-          </div>
-          <button
-            onClick={nextPage}
-            className="px-4 py-2 bg-orange-400 text-white rounded"
-          >
-            Next
-          </button>
-        </div>
+      <div className="border rounded shadow bg-white p-2 relative">
+        <div ref={viewerRef} className="h-[80vh]"></div>
       </div>
+      <div className="flex border rounded bg-white p-2 mt-4 text-center text-gray-700 h-auto">
+        <button onClick={prevPage} className="px-4 py-2 bg-gray-400 rounded">
+          Previous
+        </button>
+        <div className="flex-grow flex items-center justify-center">
+          {pageStr} | {Math.round(percentRead)}%
+        </div>
+        <button
+          onClick={nextPage}
+          className="px-4 py-2 bg-orange-400 text-white rounded"
+        >
+          Next
+        </button>
+      </div>
+      {showRecommendations && (
+        <div className="mt-4 p-4 bg-gray-100 rounded shadow">
+          <h2 className="text-xl text-black font-bold mb-4">
+            Recommended for you
+          </h2>
+          <div
+            className="grid gap-[35px] bg-orange-100 overflow-auto w-full"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+              gridAutoRows: 'minmax(300px, auto)',
+            }}
+          >
+            {recommendedBooks.map((book) => (
+              <BookCard key={book.id} book={book} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

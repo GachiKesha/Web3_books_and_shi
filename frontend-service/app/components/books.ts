@@ -22,23 +22,23 @@ export type UserBook = {
   genre: string;
 };
 
-export const backendUrl = process.env.BACKEND_URL || "http://localhost:3001";
+export const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
 export const fileServerUrl =
-  process.env.FILE_SERVER_URL || "http://localhost:3005";
+  process.env.FILE_SERVER_URL || 'http://localhost:3005';
 
 export async function getBooks(
   page: number,
   limit: number,
-  filters?: Filters
+  filters?: Filters,
 ): Promise<[Book[] | any, boolean]> {
   const queryParams = new URLSearchParams();
-  if (page) queryParams.append("page", page.toString());
-  if (limit) queryParams.append("limit", limit.toString());
+  if (page) queryParams.append('page', page.toString());
+  if (limit) queryParams.append('limit', limit.toString());
   if (filters && filters.author) {
-    queryParams.append("author", filters.author);
+    queryParams.append('author', filters.author);
   }
   if (filters && filters.genre) {
-    queryParams.append("genre", filters.genre);
+    queryParams.append('genre', filters.genre);
   }
   const res = await fetch(`${backendUrl}/api/books?${queryParams.toString()}`);
   const json = await res.json();
@@ -53,12 +53,12 @@ export async function getColumn(column: string): Promise<[string[], boolean]> {
 
 export async function getCover(book_id: string): Promise<Blob> {
   const res = await fetch(`${fileServerUrl}/covers/${book_id}.jpg`);
-  if (!res.ok) throw new Error("Cover not found");
+  if (!res.ok) throw new Error('Cover not found');
   return res.blob();
 }
 
 export async function getUserBooks(
-  token: string
+  token: string,
 ): Promise<[UserBook[] | any, boolean]> {
   const res = await fetch(`${backendUrl}/api/reading_progress/my`, {
     headers: {
@@ -85,7 +85,7 @@ export async function getUserBooks(
   });
 
   const userBooks = (await Promise.all(bookPromises)).filter(
-    Boolean
+    Boolean,
   ) as UserBook[];
 
   return [userBooks, true];
@@ -93,7 +93,7 @@ export async function getUserBooks(
 
 export async function getBookContent(
   bookPath: string,
-  token: string
+  token: string,
 ): Promise<[ArrayBuffer | null | any, boolean]> {
   try {
     const res = await fetch(`${fileServerUrl}/${bookPath}`, {
@@ -112,9 +112,9 @@ export async function getBookContent(
 
 export async function getBookPath(id: string): Promise<string> {
   const res = await fetch(`${backendUrl}/api/books/${id}`);
-  console.log("res:", res);
+  //console.log('res:', res);
   const json: any = await res.json();
-  console.log("json:", json);
+  //console.log('json:', json);
   if (res.ok) {
     return json.file_url;
   } else {
@@ -122,28 +122,84 @@ export async function getBookPath(id: string): Promise<string> {
   }
 }
 
+export async function getReadingProgress(
+  bookId: string,
+  token: string,
+): Promise<{ id: string; perc: number }> {
+  const res = await fetch(`${backendUrl}/api/reading_progress/get/${bookId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) {
+    return { id: '', perc: 0 };
+  } else {
+    const json = await res.json();
+    console.log(json);
+    return { id: json.id, perc: json.percentage_read / 100 };
+  }
+}
+
 export async function saveReadingProgress(
+  id: string,
   bookId: string,
   token: string,
   currentPage: number,
-  percentage: number
-) {
-  await fetch(`${backendUrl}/api/reading/progress`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      book_id: bookId,
-      current_page: currentPage,
-      percentage_read: percentage,
-    }),
-  });
+  percentage: number,
+): Promise<string> {
+  if (id === '') {
+    console.log('create');
+    const res = await fetch(`${backendUrl}/api/reading_progress/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        book_id: bookId,
+        current_page: currentPage,
+        percentage_read: percentage,
+      }),
+    });
+    if (!res.ok) throw new Error(await res.json());
+    const json = await res.json();
+    return json.id;
+  } else {
+    console.log('update');
+    const res = await fetch(`${backendUrl}/api/reading_progress/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        current_page: currentPage,
+        percentage_read: percentage,
+      }),
+    });
+    if (!res.ok) throw new Error(await res.json());
+    const json = await res.json();
+    console.log(json);
+    return json.id;
+  }
 }
 
 export function getBookContentUrl(filename: string) {
   return `${
-    process.env.FILE_SERVER_URL || "http://localhost:3005"
+    process.env.FILE_SERVER_URL || 'http://localhost:3005'
   }/${filename}`;
+}
+
+export async function getRecommendations(token: string) {
+  const res = await fetch(`${backendUrl}/api/reading_progress/recommend/`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json);
+  return json;
 }

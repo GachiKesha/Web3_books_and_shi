@@ -21,6 +21,8 @@ export const patterns = {
     CREATE: { cmd: 'create_progress' },
     UPDATE: { cmd: 'update_progress' },
     FIND_ALL: { cmd: 'find_all_books_in_reading_by_user' },
+    FIND_BY_BOOK: { cmd: 'find_reading_by_user_and_book' },
     DELETE: { cmd: 'delete_progress' },
+    RECOMMEND: { cmd: 'recommend_books' },
   },
 };

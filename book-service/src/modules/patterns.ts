@@ -6,5 +6,6 @@ export const patterns = {
     FIND_COLUMN: { cmd: 'find_column' },
     FIND_BY_ID: { cmd: 'find_book_by_id' },
     DELETE: { cmd: 'delete_book' },
+    RECOMMEND: { cmd: 'recommend_books' },
   },
 };
