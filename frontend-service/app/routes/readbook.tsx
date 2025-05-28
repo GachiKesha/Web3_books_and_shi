@@ -117,8 +117,9 @@ export default function ReadBookPage() {
   }, [bookUrl, location]);
 
   useEffect(() => {
+    console.log('setting interval');
     const interval = setInterval(() => {
-      if (bookId && token && existingReading.current) {
+      if (bookId && token) {
         saveReadingProgress(
           existingReading.current,
           bookId,
@@ -130,6 +131,8 @@ export default function ReadBookPage() {
             existingReading.current = id;
           })
           .catch((err) => console.error('Progress save error', err));
+      } else {
+        console.log('no book or token is null:', bookId, token !== '');
       }
     }, 10000);
 
