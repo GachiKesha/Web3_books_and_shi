@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
-import { type UserBook, getCover, getUserBooks } from "../components/books";
-import BookControlButtons from "../components/Controlls";
-import Header from "../components/Header";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import { type UserBook, getCover, getUserBooks } from '../components/books';
+import BookControlButtons from '../components/Controlls';
+import Header from '../components/Header';
 
 export default function MyBooksPage() {
   const navigate = useNavigate();
@@ -10,8 +10,8 @@ export default function MyBooksPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [genres, setGenres] = useState<string[]>([]);
   const [authors, setAuthors] = useState<string[]>([]);
-  const [selectedGenre, setSelectedGenre] = useState("");
-  const [selectedAuthor, setSelectedAuthor] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedAuthor, setSelectedAuthor] = useState('');
   const [filteredBooks, setFilteredBooks] = useState<UserBook[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,9 +39,9 @@ export default function MyBooksPage() {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken = sessionStorage.getItem("accessToken");
+    const storedToken = sessionStorage.getItem('accessToken');
     if (!storedToken) {
-      navigate("/login");
+      navigate('/login');
     } else {
       setToken(storedToken);
     }
@@ -109,24 +109,24 @@ export default function MyBooksPage() {
           id="book-container"
           className="grid gap-[35px] p-[40px] bg-orange-200 dark:bg-gray-100 overflow-auto w-full"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gridAutoRows: "minmax(300px, auto)",
-            maxWidth: "100%",
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridAutoRows: 'minmax(300px, auto)',
+            maxWidth: '100%',
           }}
         >
           {filteredBooks.map((book) => (
             <MyBookCard key={book.id} book={book} />
           ))}
         </div>
-        <div>{isLoading ? "Loading..." : null}</div>
+        <div>{isLoading ? 'Loading...' : null}</div>
       </div>
     </div>
   );
 }
 
 const MyBookCard = ({ book }: { book: UserBook }) => {
-  const [coverUrl, setCoverUrl] = useState<string>("/book_cover.jpg");
+  const [coverUrl, setCoverUrl] = useState<string>('/book_cover.jpg');
   const navigate = useNavigate();
 
   const loadCover = async (id: string) => {
@@ -134,8 +134,8 @@ const MyBookCard = ({ book }: { book: UserBook }) => {
       const blob = await getCover(id);
       setCoverUrl(URL.createObjectURL(blob));
     } catch {
-      console.warn("Error with cover fetching");
-      setCoverUrl("/book_cover.jpg");
+      console.warn('Error with cover fetching');
+      setCoverUrl('/book_cover.jpg');
     }
   };
 
@@ -144,33 +144,48 @@ const MyBookCard = ({ book }: { book: UserBook }) => {
   }, [book]);
 
   const progress = book.percentage_read ?? 0;
+  const isCompleted = progress >= 100;
 
   return (
-    <div className="flex flex-col items-center bg-yellow-100 dark:bg-white shadow-md rounded-md p-4">
-      <img
-        src={coverUrl}
-        alt={book.title}
-        className="w-full h-[250px] object-cover rounded-md mb-2"
-      />
+    <div className="flex flex-col items-center bg-yellow-100 dark:bg-white shadow-md rounded-md p-4 relative">
+      <div className="w-full h-auto relative mb-2">
+        <img
+          src={coverUrl}
+          alt={book.title}
+          className="w-full h-full object-cover rounded-md"
+        />
+        {isCompleted && (
+          <div
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            }}
+            className="absolute inset-0 flex items-center justify-center rounded-md"
+          >
+            <span className="text-white text-xl font-bold">Completed</span>
+          </div>
+        )}
+      </div>
+
       <h3 className="text-lg font-semibold text-center text-gray-800">
         {book.title}
       </h3>
       <p className="text-sm text-center text-gray-600 mb-2">{book.author}</p>
 
-      <div className="w-full h-4 bg-gray-300 rounded overflow-hidden mb-2">
+      <div className="w-full h-4 bg-gray-300 rounded overflow-hidden mb-2 relative">
         <div
           className="h-full bg-orange-500"
           style={{ width: `${progress}%` }}
         ></div>
+        <span className="absolute inset-0 flex justify-center items-center text-xs font-semibold text-gray-900">
+          {Math.round(progress)}%
+        </span>
       </div>
 
       <button
-        onClick={() => {
-          navigate(`/read/${book.id}`);
-        }}
+        onClick={() => navigate(`/read/${book.id}`)}
         className="mt-2 px-4 py-2 bg-orange-600 text-white rounded shadow hover:bg-orange-700"
       >
-        Continue Reading
+        {isCompleted ? 'View' : 'Continue Reading'}
       </button>
     </div>
   );

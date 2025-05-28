@@ -31,6 +31,8 @@ export default function ReadBookPage() {
   const bookRef = useRef<Book>(null);
   const renditionRef = useRef<Rendition>(null);
   const viewerRef = useRef<HTMLDivElement | null>(null);
+  const latestPageRef = useRef<number>(0);
+  const latestPercentRef = useRef<number>(0);
 
   useEffect(() => {
     const t = sessionStorage.getItem('accessToken');
@@ -44,7 +46,7 @@ export default function ReadBookPage() {
       setBookUrl(getBookContentUrl(path));
       const cfi = localStorage.getItem(`epub-location-${bookId}`);
       getReadingProgress(bookId!, t).then(({ id, perc }) => {
-        console.log('get:', id, perc);
+        //console.log('get:', id, perc);
         existingReading.current = id;
         percent.current = perc;
       });
@@ -92,16 +94,10 @@ export default function ReadBookPage() {
             );
 
             localStorage.setItem(`epub-location-${bookId}`, loc.start.cfi);
-            console.log(existingReading.current);
-            saveReadingProgress(
-              existingReading.current,
-              bookId!,
-              token,
-              loc.start.displayed.page,
-              percent,
-            )
-              .then((id) => (existingReading.current = id))
-              .catch((err) => console.error(err));
+            //console.log(existingReading.current);
+
+            latestPageRef.current = loc.start.displayed.page;
+            latestPercentRef.current = percent;
 
             if (Math.round(percent) === 100 && !showRecommendations) {
               getRecommendations(token)
@@ -119,6 +115,26 @@ export default function ReadBookPage() {
       console.error(err);
     }
   }, [bookUrl, location]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (bookId && token && existingReading.current) {
+        saveReadingProgress(
+          existingReading.current,
+          bookId,
+          token,
+          latestPageRef.current,
+          latestPercentRef.current,
+        )
+          .then((id) => {
+            existingReading.current = id;
+          })
+          .catch((err) => console.error('Progress save error', err));
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [bookId, token]);
 
   const nextPage = () => {
     renditionRef.current?.next();
