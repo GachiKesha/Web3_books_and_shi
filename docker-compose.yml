@@ -100,5 +100,11 @@ services:
     build: ./frontend-service
     environment:
       BACKEND_URL: http://127.0.0.1:3001
+      FILE_SERVER_URL: http://127.0.0.1:3005
     ports:
       - "3000:3000"
+
+  file-server:
+    build: ./file-server
+    ports:
+      - "3005:3005"
